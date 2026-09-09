@@ -13,6 +13,8 @@ services:
       - "9000:9000"
       - "9090:9090"
       - "9091:9091"
+      - "10000:10000"
+      - "10002:10002"
     volumes:
       - hdfs-namenode:/data/hdfs/namenode
       - zookeeper-data:/data/zookeeper
@@ -63,6 +65,31 @@ services:
         ipv4_address: 172.30.0.30
     mem_limit: 0.8g
     cpus: 1
+
+  # NiFi : ingestion visuelle (séquence 07 du cours).
+  # Image officielle = branche 2.x (Java 21 embarqué, client Hadoop 3.x
+  # compatible avec notre Hadoop 3.3.6). UI sur http://localhost:8050/nifi.
+  nifi:
+    container_name: hadoop-nifi
+    image: apache/nifi:2.11.0
+    hostname: hadoop-nifi
+    ports:
+      - "8050:8050"
+    environment:
+      - NIFI_WEB_HTTP_PORT=8050
+    volumes:
+      # Répertoire d'entrée des fichiers à ingérer (TP : GetFile)
+      - ./nifi/input:/opt/nifi/input
+      # Configuration Hadoop du cluster (copiée depuis config/, voir README)
+      - ./nifi/hadoop:/opt/nifi/hadoop
+    networks:
+      hadoop-net:
+        ipv4_address: 172.30.0.40
+    mem_limit: 1g
+    cpus: 1
+    depends_on:
+      master:
+        condition: service_started
 
 volumes:
   hdfs-namenode:

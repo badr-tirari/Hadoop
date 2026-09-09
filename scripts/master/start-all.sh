@@ -8,4 +8,5 @@ echo "[INFO] Starting all services..."
 ./start-hbase.sh
 ./start-thrift.sh
 ./start-rest.sh
+./start-hive.sh
 echo "[INFO] All services started successfully."

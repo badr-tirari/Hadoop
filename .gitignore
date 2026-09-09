@@ -2,3 +2,6 @@ volumes/
 __pycache__/
 *.pyc
 .DS_Store
+# Fichiers ingérés par NiFi (ne pas versionner les données de TP)
+nifi/input/*
+!nifi/input/.gitkeep

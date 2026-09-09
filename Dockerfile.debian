@@ -4,6 +4,7 @@ FROM alpine:3.20 AS builder
 ARG HADOOP_VERSION=3.3.6
 ARG HBASE_VERSION=2.5.15
 ARG ZK_VERSION=3.8.6
+ARG HIVE_VERSION=4.2.1
 RUN apk add --no-cache curl
 
 RUN curl -fsSL https://dlcdn.apache.org/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz \
@@ -15,30 +16,38 @@ RUN curl -fsSL https://dlcdn.apache.org/hbase/$HBASE_VERSION/hbase-$HBASE_VERSIO
 RUN curl -fsSL https://dlcdn.apache.org/zookeeper/zookeeper-$ZK_VERSION/apache-zookeeper-$ZK_VERSION-bin.tar.gz \
     | tar xz -C /opt && mv /opt/apache-zookeeper-$ZK_VERSION-bin /opt/zookeeper
 
+RUN curl -fsSL https://dlcdn.apache.org/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz \
+    | tar xz -C /opt && mv /opt/apache-hive-$HIVE_VERSION-bin /opt/hive
+
 RUN rm -rf \
     /opt/hadoop/share/doc \
     /opt/hbase/docs \
     /opt/zookeeper/docs \
+    /opt/hive/docs \
+    /opt/hive/jdbc \
+    /opt/hive/hcatalog/share/doc \
   && find /opt \( -name "*.bat" -o -name "*.cmd" -o -name "*.ps1" -o -name "*.a" \) -delete
 
 # Stage 2: runtime image
 FROM debian:bookworm-slim
 
-LABEL description="Hadoop 3.3.6 + HBase 2.5.15 + ZooKeeper 3.8.6 - Learning Cluster"
+LABEL description="Hadoop 3.3.6 + HBase 2.5.15 + ZooKeeper 3.8.6 + Hive 4.2.1 - Learning Cluster"
 LABEL maintainer="Hadoop Docker Learning"
 
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV HADOOP_HOME=/opt/hadoop
 ENV HBASE_HOME=/opt/hbase
 ENV ZK_HOME=/opt/zookeeper
+ENV HIVE_HOME=/opt/hive
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 ENV HBASE_CONF_DIR=$HBASE_HOME/conf
+ENV HIVE_CONF_DIR=$HIVE_HOME/conf
 ENV HDFS_NAMENODE_USER=root
 ENV HDFS_DATANODE_USER=root
 ENV HDFS_SECONDARYNAMENODE_USER=root
 ENV YARN_RESOURCEMANAGER_USER=root
 ENV YARN_NODEMANAGER_USER=root
-ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HBASE_HOME/bin:$ZK_HOME/bin
+ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HBASE_HOME/bin:$ZK_HOME/bin:$HIVE_HOME/bin
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         openjdk-17-jdk-headless \
@@ -57,6 +66,7 @@ RUN ssh-keygen -t rsa -P '' -f /root/.ssh/id_rsa && \
 COPY --from=builder /opt/hadoop $HADOOP_HOME
 COPY --from=builder /opt/hbase $HBASE_HOME
 COPY --from=builder /opt/zookeeper $ZK_HOME
+COPY --from=builder /opt/hive $HIVE_HOME
 
 RUN mkdir -p /data/hdfs/namenode /data/hdfs/datanode /data/zookeeper /opt/scripts /home/src /var/run/sshd
 
@@ -65,6 +75,7 @@ COPY config/hdfs-site.xml $HADOOP_CONF_DIR/hdfs-site.xml
 COPY config/mapred-site.xml $HADOOP_CONF_DIR/mapred-site.xml
 COPY config/yarn-site.xml $HADOOP_CONF_DIR/yarn-site.xml
 COPY config/hbase-site.xml $HBASE_CONF_DIR/hbase-site.xml
+COPY config/hive-site.xml $HIVE_CONF_DIR/hive-site.xml
 COPY config/zoo.cfg $ZK_HOME/conf/zoo.cfg
 COPY config/datanodes $HADOOP_CONF_DIR/workers
 COPY config/datanodes $HBASE_CONF_DIR/regionservers
@@ -76,6 +87,6 @@ RUN chmod +x /opt/scripts/entrypoint.sh /home/*.sh && \
 
 WORKDIR /home
 
-EXPOSE 9870 8088 8042 16010 2181 9000 9090 9091
+EXPOSE 9870 8088 8042 16010 2181 9000 9090 9091 10000 10002
 
 ENTRYPOINT ["/opt/scripts/entrypoint.sh"]

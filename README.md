@@ -11,12 +11,14 @@ Stack Hadoop complète pour l'apprentissage, déployable en local ou sur VM.
 | Hadoop | 3.3.6 | [dlcdn.apache.org](https://dlcdn.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz) |
 | HBase | 2.5.15 | [dlcdn.apache.org](https://dlcdn.apache.org/hbase/2.5.15/hbase-2.5.15-hadoop3-bin.tar.gz) |
 | ZooKeeper | 3.8.6 | [dlcdn.apache.org](https://dlcdn.apache.org/zookeeper/zookeeper-3.8.6/apache-zookeeper-3.8.6-bin.tar.gz) |
+| Hive | 4.2.1 | [dlcdn.apache.org](https://dlcdn.apache.org/hive/hive-4.2.1/apache-hive-4.2.1-bin.tar.gz) |
+| NiFi | 2.11.0 | `apache/nifi:2.11.0` (Docker Hub, conteneur dédié) |
 | Python | 3.11 | pip : pandas, matplotlib, happybase, thriftpy2 |
 
 ## Prérequis
 
 - Docker Engine 24+ et Docker Compose v2+
-- 4+ GB RAM recommandés
+- 5+ GB RAM recommandés (master 1.8g + 2 slaves 0.8g + NiFi 1g)
 
 ## Quick start
 
@@ -24,7 +26,7 @@ Stack Hadoop complète pour l'apprentissage, déployable en local ou sur VM.
 # Build de l'image (~5-10 min selon la connexion)
 docker compose build
 
-# Lancement des 3 conteneurs (froids : SSH uniquement)
+# Lancement des 4 conteneurs (3 cluster + NiFi) (froids : SSH uniquement)
 docker compose up -d
 
 # Vérification
@@ -41,7 +43,7 @@ Vous devez lancer les services manuellement depuis le master.
 ./bash_hadoop_master.sh
 # ou : docker exec -it hadoop-master bash
 
-# 2. Tout en un (ZooKeeper → HDFS → YARN → History → HBase → Thrift → REST)
+# 2. Tout en un (ZooKeeper → HDFS → YARN → History → HBase → Thrift → REST → Hive)
 ./start-all.sh
 
 # Ou étape par étape :
@@ -52,6 +54,7 @@ Vous devez lancer les services manuellement depuis le master.
 ./start-hbase.sh        # HBase (Master + RegionServers)
 ./start-thrift.sh       # HBase Thrift API (optionnel)
 ./start-rest.sh         # HBase REST API (optionnel)
+./start-hive.sh         # HiveServer2 (SQL sur HDFS)
 
 # 3. Vérifier les processus
 jps
@@ -73,6 +76,7 @@ pkill -f 'NameNode' 2>/dev/null;
 pkill -f 'DataNode' 2>/dev/null
 pkill -f 'SecondaryNameNode' 2>/dev/null;
 pkill -f 'historyserver' 2>/dev/null
+pkill -f 'hiveserver2' 2>/dev/null
 ```
 
 Puis arrêter les conteneurs depuis l'hôte :
@@ -97,6 +101,17 @@ docker compose down
 | `HQuorumPeer` | Serveur ZooKeeper | 2181 |
 | `ThriftServer` | API Thrift (happybase) | 9090 |
 | `RESTServer` | API REST (Power BI) | 9091 |
+| `HiveServer2` (RunJar) | SQL sur HDFS (Metastore Derby) | 10000 (JDBC), 10002 (UI) |
+
+### Conteneur NiFi (`hadoop-nifi`)
+
+| Processus | Rôle | Port |
+|-----------|------|------|
+| NiFi (Java 21) | Ingestion visuelle de flux (GetFile → … → PutHDFS) | 8050 (UI) |
+
+> NiFi vit dans son propre conteneur (image officielle `apache/nifi`), sur le
+> réseau `hadoop-net`. Volumes : `nifi/input/` (fichiers à ingérer) et
+> `nifi/hadoop/` (conf Hadoop pour PutHDFS) — voir [`nifi/README.md`](nifi/README.md).
 
 ### Slaves (`hadoop-slave1`, `hadoop-slave2`)
 
@@ -117,6 +132,9 @@ docker compose down
 | `http://<IP>:8042` | `8042` | NodeManager slave2 | Logs et statut du nœud d'exécution YARN slave2 |
 | `http://<IP>:16010` | `16010` | HMaster | Interface web HBase (tables, regions, masters) |
 | `http://<IP>:9091` | `9091` | HBase REST | API REST HBase (requêtes HTTP JSON/XML) |
+| `http://<IP>:8050/nifi` | `8050` | NiFi | Canvas des flux d'ingestion (séquence 07 du cours) |
+| `jdbc:hive2://<IP>:10000` | `10000` | HiveServer2 | SQL sur HDFS — connexion Beeline |
+| `http://<IP>:10002` | `10002` | HiveServer2 UI | Statut des sessions Hive |
 
 > Le master n'a pas de NodeManager (il ne figure pas dans `workers`).
 > Les ports 2181 (ZooKeeper), 9000 (NameNode RPC), 9090 (Thrift) sont des protocoles binaires, pas des interfaces web.
@@ -128,6 +146,23 @@ docker compose down
 ```bash
 python3 /home/src/hbase.py
 ```
+
+### Hive avec Beeline
+
+```bash
+# Dans le master (après ./start-hive.sh)
+beeline -u jdbc:hive2://localhost:10000
+```
+
+```sql
+SHOW DATABASES;
+CREATE DATABASE spotify_db;
+```
+
+> Le Metastore Derby embarqué accepte **une session à la fois** (verrou sur
+> `/home/metastore_db`) — suffisant pour un cluster d'apprentissage, un
+> seul apprenant/facilitateur à la fois. Hive 4.x ne fournit plus la
+> vieille CLI `hive` : Beeline est le client officiel.
 
 ### Power BI
 
@@ -156,7 +191,7 @@ docker compose up -d
 hadoop-cluster/
 ├── Dockerfile.debian         # Image multistage (Debian 12) — actif
 ├── Dockerfile.rocky          # Image multistage (Rocky Linux 9) — conservé
-├── docker-compose.yml        # Orchestration
+├── docker-compose.yml        # Orchestration (3 conteneurs cluster + NiFi)
 ├── container_start.sh        # Démarre les conteneurs
 ├── container_stop.sh         # Arrête les conteneurs
 ├── bash_hadoop_master.sh     # Console dans le master
@@ -166,8 +201,13 @@ hadoop-cluster/
 │   ├── mapred-site.xml
 │   ├── yarn-site.xml
 │   ├── hbase-site.xml
+│   ├── hive-site.xml         # Metastore Derby + HiveServer2 (port 10000)
 │   ├── zoo.cfg
 │   └── datanodes
+├── nifi/                     # Conteneur NiFi (séquence 07)
+│   ├── README.md             # Setup volumes + PutHDFS
+│   ├── hadoop/               # core-site.xml + hdfs-site.xml pour PutHDFS
+│   └── input/                # Fichiers à ingérer (GetFile)
 ├── scripts/                  # Scripts copiés dans le conteneur
 │   ├── entrypoint.sh          # Entrypoint (init réseau + heaps JVM)
 │   └── master/                # Scripts de gestion des services (dans /home/)
@@ -179,6 +219,7 @@ hadoop-cluster/
 │       ├── start-hbase.sh
 │       ├── start-thrift.sh
 │       ├── start-rest.sh
+│       ├── start-hive.sh      # HiveServer2 (Derby embarqué)
 │       └── README.md
 ├── src/                     # Scripts des TP
 │   ├── hbase.py              # Exemple HBase (étudiants)

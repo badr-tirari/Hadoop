@@ -6,7 +6,7 @@
 | Ressource | Minimum | Recommandé |
 |-----------|---------|------------|
 | vCPU | 2 cœurs | 4 cœurs |
-| RAM | 3.5 GB | 8 GB |
+| RAM | 5 GB | 8 GB |
 | Disque | 30 GB | 50 GB |
 | OS invité | Debian 12 / Ubuntu 22.04 / Rocky Linux 9 | Debian 12 |
 | Docker | Engine 24+ | Dernière version stable |
@@ -44,13 +44,14 @@ docker compose up -d
 docker compose ps
 ```
 
-Les 3 conteneurs doivent être `Up` :
+Les 4 conteneurs doivent être `Up` :
 
 ```
 NAME            STATUS   PORTS
 hadoop-master   Up       ...
 hadoop-slave1   Up       ...
 hadoop-slave2   Up       ...
+hadoop-nifi     Up       ...
 ```
 
 ---
@@ -69,6 +70,9 @@ hadoop-slave2   Up       ...
 | 9000 | 9000 | NameNode RPC | Binaire | — |
 | 9090 | 9090 | HBase Thrift | Binaire | — |
 | 9091 | 9091 | HBase REST API | API HTTP | `http://<IP_VM>:9091` |
+| 10000 | 10000 | HiveServer2 (JDBC/Beeline) | Binaire | — |
+| 10002 | 10002 | HiveServer2 UI | UI web | `http://<IP_VM>:10002` |
+| 8050 | 8050 | NiFi | UI web | `http://<IP_VM>:8050/nifi` |
 
 ---
 
@@ -97,6 +101,8 @@ Depuis votre poste, ouvrir :
 | `http://<IP_VM>:9091` | Réponse XML/JSON de l'API REST HBase |
 | `http://<IP_VM>:8041` | NodeManager slave1 (logs, nodes) |
 | `http://<IP_VM>:8042` | NodeManager slave2 (logs, nodes) |
+| `http://<IP_VM>:8050/nifi` | Canvas NiFi (menu global, palette de processeurs) |
+| `http://<IP_VM>:10002` | UI HiveServer2 (statut des sessions) — après `./start-hive.sh` |
 
 ---
 
@@ -104,7 +110,7 @@ Depuis votre poste, ouvrir :
 
 ```bash
 # 1. Arrêter les services dans le master
-docker exec hadoop-master bash -c "pkill -f 'hbase|zookeeper|ResourceManager|NodeManager|NameNode|DataNode|SecondaryNameNode|historyserver' 2>/dev/null"
+docker exec hadoop-master bash -c "pkill -f 'hbase|zookeeper|ResourceManager|NodeManager|NameNode|DataNode|SecondaryNameNode|historyserver|hiveserver2' 2>/dev/null"
 
 # 2. Arrêter les conteneurs
 cd /root/hadoop-cluster
