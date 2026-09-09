@@ -4,7 +4,8 @@ FROM alpine:3.20 AS builder
 ARG HADOOP_VERSION=3.3.6
 ARG HBASE_VERSION=2.5.15
 ARG ZK_VERSION=3.8.6
-ARG HIVE_VERSION=4.2.1
+# 4.1.0 (et non 4.2.x) : Hive 4.2 exige Java 21, l'image tourne en Java 17
+ARG HIVE_VERSION=4.1.0
 RUN apk add --no-cache curl
 
 RUN curl -fsSL https://dlcdn.apache.org/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz \
@@ -16,7 +17,8 @@ RUN curl -fsSL https://dlcdn.apache.org/hbase/$HBASE_VERSION/hbase-$HBASE_VERSIO
 RUN curl -fsSL https://dlcdn.apache.org/zookeeper/zookeeper-$ZK_VERSION/apache-zookeeper-$ZK_VERSION-bin.tar.gz \
     | tar xz -C /opt && mv /opt/apache-zookeeper-$ZK_VERSION-bin /opt/zookeeper
 
-RUN curl -fsSL https://dlcdn.apache.org/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz \
+# 4.1.0 n'est plus sur dlcdn (seul miroir des 4.2.x) : archive.apache.org
+RUN curl -fsSL https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz \
     | tar xz -C /opt && mv /opt/apache-hive-$HIVE_VERSION-bin /opt/hive
 
 RUN rm -rf \
@@ -31,7 +33,7 @@ RUN rm -rf \
 # Stage 2: runtime image
 FROM debian:bookworm-slim
 
-LABEL description="Hadoop 3.3.6 + HBase 2.5.15 + ZooKeeper 3.8.6 + Hive 4.2.1 - Learning Cluster"
+LABEL description="Hadoop 3.3.6 + HBase 2.5.15 + ZooKeeper 3.8.6 + Hive 4.1.0 - Learning Cluster"
 LABEL maintainer="Hadoop Docker Learning"
 
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64

@@ -11,7 +11,7 @@ Stack Hadoop complète pour l'apprentissage, déployable en local ou sur VM.
 | Hadoop | 3.3.6 | [dlcdn.apache.org](https://dlcdn.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz) |
 | HBase | 2.5.15 | [dlcdn.apache.org](https://dlcdn.apache.org/hbase/2.5.15/hbase-2.5.15-hadoop3-bin.tar.gz) |
 | ZooKeeper | 3.8.6 | [dlcdn.apache.org](https://dlcdn.apache.org/zookeeper/zookeeper-3.8.6/apache-zookeeper-3.8.6-bin.tar.gz) |
-| Hive | 4.2.1 | [dlcdn.apache.org](https://dlcdn.apache.org/hive/hive-4.2.1/apache-hive-4.2.1-bin.tar.gz) |
+| Hive | 4.1.0 | [archive.apache.org](https://archive.apache.org/dist/hive/hive-4.1.0/apache-hive-4.1.0-bin.tar.gz) — 4.2 exige Java 21, l'image tourne en Java 17 |
 | NiFi | 2.11.0 | `apache/nifi:2.11.0` (Docker Hub, conteneur dédié) |
 | Python | 3.11 | pip : pandas, matplotlib, happybase, thriftpy2 |
 
@@ -107,7 +107,7 @@ docker compose down
 
 | Processus | Rôle | Port |
 |-----------|------|------|
-| NiFi (Java 21) | Ingestion visuelle de flux (GetFile → … → PutHDFS) | 8050 (UI) |
+| NiFi (Java 21) | Ingestion visuelle de flux (GetFile → … → PutHDFS) | 8443 (UI, **https**) |
 
 > NiFi vit dans son propre conteneur (image officielle `apache/nifi`), sur le
 > réseau `hadoop-net`. Volumes : `nifi/input/` (fichiers à ingérer) et
@@ -132,7 +132,7 @@ docker compose down
 | `http://<IP>:8042` | `8042` | NodeManager slave2 | Logs et statut du nœud d'exécution YARN slave2 |
 | `http://<IP>:16010` | `16010` | HMaster | Interface web HBase (tables, regions, masters) |
 | `http://<IP>:9091` | `9091` | HBase REST | API REST HBase (requêtes HTTP JSON/XML) |
-| `http://<IP>:8050/nifi` | `8050` | NiFi | Canvas des flux d'ingestion (séquence 07 du cours) |
+| `https://<IP>:8443/nifi` | `8443` | NiFi | Canvas des flux d'ingestion (séquence 07 du cours) — HTTPS auto-signé, accepter le certificat dans le navigateur |
 | `jdbc:hive2://<IP>:10000` | `10000` | HiveServer2 | SQL sur HDFS — connexion Beeline |
 | `http://<IP>:10002` | `10002` | HiveServer2 UI | Statut des sessions Hive |
 

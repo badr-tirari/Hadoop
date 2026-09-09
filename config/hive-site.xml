@@ -2,11 +2,13 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
     <!-- Metastore embarqué (Derby) : suffisant pour un cluster d'apprentissage,
-         une session à la fois (cf. cours CRS/05). Le dossier /home/metastore_db
-         est créé à la première connexion. -->
+         une session à la fois (cf. cours CRS/05). La base vit dans le
+         sous-répertoire metastore_db/ du volume /home/metastore_db — Derby
+         (create=true) refuse de créer une base dans un répertoire préexistant
+         (erreur XBM0J), il doit donc créer lui-même son sous-dossier. -->
     <property>
         <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:derby:;databaseName=/home/metastore_db;create=true</value>
+        <value>jdbc:derby:;databaseName=/home/metastore_db/metastore_db;create=true</value>
     </property>
     <property>
         <name>javax.jdo.option.ConnectionDriverName</name>

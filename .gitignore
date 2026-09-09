@@ -5,3 +5,10 @@ __pycache__/
 # Fichiers ingérés par NiFi (ne pas versionner les données de TP)
 nifi/input/*
 !nifi/input/.gitkeep
+# Runtime Hive : /home du master est le bind mount de scripts/master/
+metastore_db/
+hiveserver2.log
+derby.log
+
+# Logs runtime du master (bind mount scripts/master/ -> /home)
+schematool.log

@@ -72,7 +72,7 @@ hadoop-nifi     Up       ...
 | 9091 | 9091 | HBase REST API | API HTTP | `http://<IP_VM>:9091` |
 | 10000 | 10000 | HiveServer2 (JDBC/Beeline) | Binaire | — |
 | 10002 | 10002 | HiveServer2 UI | UI web | `http://<IP_VM>:10002` |
-| 8050 | 8050 | NiFi | UI web | `http://<IP_VM>:8050/nifi` |
+| 8443 | 8443 | NiFi | UI web (HTTPS auto-signé) | `https://<IP_VM>:8443/nifi` |
 
 ---
 
@@ -101,7 +101,7 @@ Depuis votre poste, ouvrir :
 | `http://<IP_VM>:9091` | Réponse XML/JSON de l'API REST HBase |
 | `http://<IP_VM>:8041` | NodeManager slave1 (logs, nodes) |
 | `http://<IP_VM>:8042` | NodeManager slave2 (logs, nodes) |
-| `http://<IP_VM>:8050/nifi` | Canvas NiFi (menu global, palette de processeurs) |
+| `https://<IP_VM>:8443/nifi` | Canvas NiFi (menu global, palette de processeurs) — HTTPS auto-signé, accepter le certificat |
 | `http://<IP_VM>:10002` | UI HiveServer2 (statut des sessions) — après `./start-hive.sh` |
 
 ---

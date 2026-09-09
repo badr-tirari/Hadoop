@@ -58,15 +58,21 @@ setup_ssh_config() {
 # ── Hadoop env tweaks (heaps) ─────────────────────────────────
 
 setup_hadoop_heaps() {
+    # Idempotent : le bloc est réécrit à chaque démarrage (le conteneur peut
+    # redémarrer et le cat >> ne doit pas dupliquer les exports).
+    sed -i '/# --- cluster-heaps (added by entrypoint) ---/,/# --- fin cluster-heaps ---/d' $HADOOP_CONF_DIR/hadoop-env.sh
     cat >> $HADOOP_CONF_DIR/hadoop-env.sh <<-EOF
+# --- cluster-heaps (added by entrypoint) ---
 export JAVA_HOME=$JAVA_HOME
 export HADOOP_HOME=$HADOOP_HOME
 export HADOOP_CONF_DIR=$HADOOP_CONF_DIR
-export HADOOP_HEAPSIZE=192
-export HADOOP_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED -XX:MaxMetaspaceSize=64m -Xss512k"
+export HADOOP_HEAPSIZE=\${HADOOP_HEAPSIZE:-192}
+export HADOOP_METASPACE_MAX=\${HADOOP_METASPACE_MAX:-64m}
+export HADOOP_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED -XX:MaxMetaspaceSize=\${HADOOP_METASPACE_MAX:-64m} -Xss512k"
 export HDFS_NAMENODE_OPTS="-Xms192m -Xmx192m"
 export HDFS_DATANODE_OPTS="-Xms128m -Xmx128m"
 export HDFS_SECONDARYNAMENODE_OPTS="-Xms192m -Xmx192m"
+# --- fin cluster-heaps ---
 EOF
 
     cat >> $HADOOP_CONF_DIR/yarn-env.sh <<-EOF

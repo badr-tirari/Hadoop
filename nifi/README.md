@@ -7,8 +7,11 @@ officielle `apache/nifi:2.11.0` est utilisée telle quelle :
 
 ```bash
 docker compose up -d          # ou : docker compose up -d nifi
-# UI : http://localhost:8050/nifi
+# UI : https://localhost:8443/nifi
 ```
+
+NiFi 2.x impose le **HTTPS** (certificat auto-signé) : au premier accès,
+le navigateur propose « accepter le risque » — accepter une fois.
 
 ## Volumes montés
 
