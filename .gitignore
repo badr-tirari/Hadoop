@@ -5,6 +5,13 @@ __pycache__/
 # Fichiers ingérés par NiFi (ne pas versionner les données de TP)
 nifi/input/*
 !nifi/input/.gitkeep
+# Sorties du flux NiFi (PutFile) et dépot des failure : meme raison
+nifi/output/*
+!nifi/output/.gitkeep
+nifi/errors/*
+!nifi/errors/.gitkeep
+# Login NiFi : secret local, seul .env.example est versionné
+nifi/credentials.env
 # Runtime Hive : /home du master est le bind mount de scripts/master/
 metastore_db/
 hiveserver2.log

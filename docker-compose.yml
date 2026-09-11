@@ -20,6 +20,10 @@ services:
       - zookeeper-data:/data/zookeeper
       - ./src:/home/src
       - ./scripts/master/:/home/
+      # Depotoir du flux NiFi (PutFile ecrit ici depuis son conteneur) :
+      # `hdfs dfs -moveFromLocal /home/staging/<fichier> ...` fonctionne
+      # donc depuis le master. Voir le service nifi.
+      - ./nifi/output:/home/staging
       # Derby ne supporte pas les bind mounts Windows (verrous db.lck) :
       # le metastore vit sur un volume Docker nommé, monté par-dessus /home.
       - hive-metastore:/home/metastore_db
@@ -72,10 +76,20 @@ services:
     cpus: 1
 
   # NiFi : ingestion visuelle (séquence 07 du cours).
-  # Image officielle 2.x : HTTPS obligatoire (self-signed) sur 8443 —
-  # le navigateur demandera d'accepter le certificat une fois. Java 21
-  # embarqué, client Hadoop 3.x compatible avec notre Hadoop 3.3.6.
+  # Image officielle 2.x : HTTPS obligatoire (self-signed) sur 8443 — le
+  # navigateur demandera d'accepter le certificat une fois, PUIS affiche un
+  # écran de login (NiFi 2.x n'a plus de mode anonyme). Java 21 embarqué,
+  # client Hadoop 3.x compatible avec notre Hadoop 3.3.6.
   # UI sur https://localhost:8443/nifi
+  #
+  # Le login est lu dans nifi/credentials.env (à créer une fois) :
+  #   cp nifi/credentials.env.example nifi/credentials.env
+  # ⚠ Sans ce fichier, l'image NÉGOCIE elle-même un couple aléatoire et
+  #   l'écrit dans `docker logs hadoop-nifi` ("Generated Username / Generated
+  #   Password") : il change à chaque recreation du conteneur, et un mot de
+  #   passe de moins de 12 caracteres est rejete pour la meme raison. D'ou le
+  #   couple fixe, et le fichier non versionne (convention : aucun secret en
+  #   dur dans git).
   nifi:
     container_name: hadoop-nifi
     image: apache/nifi:2.11.0
@@ -85,9 +99,25 @@ services:
     environment:
       - NIFI_WEB_HTTPS_PORT=8443
       - NIFI_WEB_HTTPS_HOST=0.0.0.0
+    # Login de l'UI (SINGLE_USER_CREDENTIALS_*), lu dans un fichier local
+    # non versionne. `required: false` : le demarrage du cluster ne bloque pas
+    # si on ne l'a pas encore cree — mais alors NiFi choisit un mot de passe
+    # aleatoire, cf. le commentaire du service.
+    env_file:
+      - path: ./nifi/credentials.env
+        required: false
     volumes:
       # Répertoire d'entrée des fichiers à ingérer (TP : GetFile)
       - ./nifi/input:/opt/nifi/input
+      # Sorties du flux (TP : PutFile). L'image apache/nifi 2.x n'embarque
+      # AUCUN bundle Hadoop (verifie : 117 NAR, 0 NAR hdfs), PutHDFS n'y
+      # existe pas. Le flux s'arrete donc a PutFile, et c'est le terminal qui
+      # pousse le fichier dans HDFS avec `hdfs dfs -moveFromLocal` — c'est
+      # aussi ce que l'on montre au TP 05. Le montage est visible du master
+      # (./nifi/output -> /home/staging) pour que la commande fonctionne.
+      - ./nifi/output:/opt/nifi/output
+      # Relations failure cablées (TP : rien ne doit disparaitre)
+      - ./nifi/errors:/opt/nifi/errors
       # Configuration Hadoop du cluster (copiée depuis config/, voir README)
       - ./nifi/hadoop:/opt/nifi/hadoop
     networks:

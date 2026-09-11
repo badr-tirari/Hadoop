@@ -107,11 +107,26 @@ docker compose down
 
 | Processus | Rôle | Port |
 |-----------|------|------|
-| NiFi (Java 21) | Ingestion visuelle de flux (GetFile → … → PutHDFS) | 8443 (UI, **https**) |
+| NiFi (Java 21) | Ingestion visuelle de flux (GetFile → ConvertRecord → PutFile) | 8443 (UI, **https**) |
 
 > NiFi vit dans son propre conteneur (image officielle `apache/nifi`), sur le
-> réseau `hadoop-net`. Volumes : `nifi/input/` (fichiers à ingérer) et
-> `nifi/hadoop/` (conf Hadoop pour PutHDFS) — voir [`nifi/README.md`](nifi/README.md).
+> réseau `hadoop-net`. Volumes : `nifi/input/` (fichiers à ingérer),
+> `nifi/output/` (déposé par `PutFile` ; monté aussi dans le master sous
+> `/home/staging`, pour `hdfs dfs -moveFromLocal`), `nifi/errors/` (relations
+> `failure` câblées) et `nifi/hadoop/` (conf Hadoop) — voir
+> [`nifi/README.md`](nifi/README.md).
+>
+> **L'image officielle n'embarque aucun bundle Hadoop** : `PutHDFS` n'existe
+> pas dans cette distribution (118 NAR, 0 NAR hdfs). Le flux s'arrête donc à
+> `PutFile` et le dépôt dans HDFS se fait à la main depuis le master — choix
+> pédagogique du cours, pas un oubli (cf. EX/07 du cours).
+
+> 🔑 **Une fois par clone** : `cp nifi/credentials.env.example
+> nifi/credentials.env`, puis fixez le mot de passe (**12 caractères
+> minimum**). Sans ce fichier — ou avec un mot de passe trop court, ce qui
+> revient exactement au même — NiFi négocie un couple aléatoire à chaque
+> création du conteneur et l'écrit dans `docker logs hadoop-nifi`. Le fichier
+> n'est pas versionné ; seul le `.example` l'est.
 
 ### Slaves (`hadoop-slave1`, `hadoop-slave2`)
 
