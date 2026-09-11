@@ -96,6 +96,7 @@ docker compose down
 | `DataNode` | Stockage HDFS local | — |
 | `ResourceManager` | Ordonnanceur YARN | 8088 (UI) |
 | `NodeManager` | Exécuteur YARN local | 8042 (UI) |
+| `JobHistoryServer` | Historique des jobs MapReduce (logs, métriques) | 19888 (UI), 10020 (RPC) |
 | `HMaster` | Gestionnaire HBase | 16010 (UI) |
 | `HRegionServer` | Stockage HBase local | — |
 | `HQuorumPeer` | Serveur ZooKeeper | 2181 |
@@ -143,6 +144,7 @@ docker compose down
 | `http://<IP>:9870` | `9870` | NameNode | Interface web HDFS (métadonnées, blocs, datanodes) |
 | `http://<IP>:9868` | `9868` | SecondaryNameNode | Statut du checkpointing |
 | `http://<IP>:8088` | `8088` | ResourceManager | Interface web YARN (jobs, scheduler, nodes) |
+| `http://<IP>:19888` | `19888` | JobHistory | Interface web de l'historique des jobs MapReduce |
 | `http://<IP>:8041` | `8041` *(→8042 interne)* | NodeManager slave1 | Logs et statut du nœud d'exécution YARN slave1 |
 | `http://<IP>:8042` | `8042` | NodeManager slave2 | Logs et statut du nœud d'exécution YARN slave2 |
 | `http://<IP>:16010` | `16010` | HMaster | Interface web HBase (tables, regions, masters) |

@@ -64,6 +64,7 @@ hadoop-nifi     Up       ...
 |-----------|---------------|---------|------|-----|
 | 9870 | 9870 | NameNode (HDFS) | UI web | `http://<IP_VM>:9870` |
 | 8088 | 8088 | ResourceManager (YARN) | UI web | `http://<IP_VM>:8088` |
+| 19888 | 19888 | JobHistory (MapReduce) | UI web | `http://<IP_VM>:19888` |
 | 16010 | 16010 | HMaster (HBase) | UI web | `http://<IP_VM>:16010` |
 | 8041 | 8042 | NodeManager slave1 | UI web | `http://<IP_VM>:8041` |
 | 8042 | 8042 | NodeManager slave2 | UI web | `http://<IP_VM>:8042` |
@@ -97,6 +98,7 @@ Depuis votre poste, ouvrir :
 |-----|-------------------|
 | `http://<IP_VM>:9870` | Interface HDFS NameNode (Overview, Datanodes, Utilities) |
 | `http://<IP_VM>:8088` | Interface YARN ResourceManager (cluster metrics, jobs, scheduler) |
+| `http://<IP_VM>:19888` | Interface JobHistory (liste des jobs, logs map/reduce) |
 | `http://<IP_VM>:16010` | Interface HBase Master (tables, regions, masters) |
 | `http://<IP_VM>:9091` | Réponse XML/JSON de l'API REST HBase |
 | `http://<IP_VM>:8041` | NodeManager slave1 (logs, nodes) |
@@ -143,7 +145,7 @@ Start les 3 containers au lancement de la VM
 
 2. Vérifier les ports ouverts sur la VM :
    ```bash
-   ss -tlnp | grep -E '9870|8088|16010|9091|8041|8042'
+   ss -tlnp | grep -E '9870|8088|19888|16010|9091|8041|8042'
    ```
 
 3. Vérifier le pare-feu Proxmox et le pare-feu local de la VM
