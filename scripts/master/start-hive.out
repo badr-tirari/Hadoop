@@ -1,0 +1,3 @@
+[INFO] Starting HiveServer2 (Derby metastore embarqué)...
+[INFO] HiveServer2 is up (jdbc:hive2://localhost:10000).
+[INFO] Se connecter avec : beeline -u jdbc:hive2://localhost:10000
