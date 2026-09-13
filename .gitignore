@@ -19,3 +19,20 @@ derby.log
 
 # Logs runtime du master (bind mount scripts/master/ -> /home)
 schematool.log
+
+# Artefacts de validation (versionnés dans cours-hadoop/EX/validation/)
+scripts/master/*_year.py
+scripts/master/broken_mapper.py
+scripts/master/run_*.sh
+scripts/master/*valid*.sql
+scripts/master/last_valid*.sql
+scripts/master/hb_test.py
+scripts/master/biblio.hb
+scripts/master/biblio.out
+scripts/master/compare_tsv.sh
+scripts/master/move_tsv.sh
+scripts/master/list.hb
+scripts/master/list.out
+scripts/master/pathtest.sh
+scripts/master/spotify-clean.tsv
+scripts/master/broken-job.log
