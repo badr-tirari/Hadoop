@@ -38,9 +38,10 @@ export JAVA_HOME=$JAVA_HOME
 export HADOOP_HOME=$HADOOP_HOME
 export HBASE_HOME=$HBASE_HOME
 export ZK_HOME=$ZK_HOME
+export HIVE_HOME=$HIVE_HOME
 export HADOOP_CONF_DIR=$HADOOP_CONF_DIR
 export HBASE_CONF_DIR=$HBASE_CONF_DIR
-export PATH=\$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HBASE_HOME/bin:$ZK_HOME/bin
+export PATH=\$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HBASE_HOME/bin:$ZK_HOME/bin:$HIVE_HOME/bin
 EOF
     chmod +x /etc/profile.d/hadoop.sh
 }
