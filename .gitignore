@@ -36,3 +36,5 @@ scripts/master/list.out
 scripts/master/pathtest.sh
 scripts/master/spotify-clean.tsv
 scripts/master/broken-job.log
+scripts/master/*.out
+scripts/master/Spotify_Most_Streamed_Songs.csv
