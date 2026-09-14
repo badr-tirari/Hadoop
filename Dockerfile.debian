@@ -36,7 +36,7 @@ FROM debian:bookworm-slim
 LABEL description="Hadoop 3.3.6 + HBase 2.5.15 + ZooKeeper 3.8.6 + Hive 4.1.0 - Learning Cluster"
 LABEL maintainer="Hadoop Docker Learning"
 
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 ENV HADOOP_HOME=/opt/hadoop
 ENV HBASE_HOME=/opt/hbase
 ENV ZK_HOME=/opt/zookeeper
@@ -56,7 +56,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         openssh-server openssh-client \
         netcat-openbsd nano \
         python3 python3-pip \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s /usr/lib/jvm/java-17-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/java-17-openjdk
 
 RUN python3 -m pip install --no-cache-dir --break-system-packages \
         pandas matplotlib happybase thriftpy2

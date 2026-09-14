@@ -6,10 +6,18 @@ ROLE=${ROLE:-slave}
 HADOOP_HOME=${HADOOP_HOME:-/opt/hadoop}
 HBASE_HOME=${HBASE_HOME:-/opt/hbase}
 ZK_HOME=${ZK_HOME:-/opt/zookeeper}
+
+# Resolve JAVA_HOME: honour the symlink created in the Dockerfile, or fall
+# back to architecture detection so the cluster works on both amd64 and arm64
+# (Apple Silicon Macs).
+if [ ! -d "$JAVA_HOME" ]; then
+    JAVA_HOME=/usr/lib/jvm/java-17-openjdk-$(dpkg --print-architecture)
+    export JAVA_HOME
+fi
 HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 HBASE_CONF_DIR=$HBASE_HOME/conf
 
-export HADOOP_HOME HBASE_HOME ZK_HOME HADOOP_CONF_DIR HBASE_CONF_DIR
+export JAVA_HOME HADOOP_HOME HBASE_HOME ZK_HOME HADOOP_CONF_DIR HBASE_CONF_DIR
 export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HBASE_HOME/bin:$ZK_HOME/bin
 export ZK_SERVER_HEAP=${ZK_SERVER_HEAP:-128}
 export SERVER_JVMFLAGS="-Xms${ZK_SERVER_HEAP}m -Xmx${ZK_SERVER_HEAP}m"
