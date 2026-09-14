@@ -20,7 +20,8 @@ derby.log
 # Logs runtime du master (bind mount scripts/master/ -> /home)
 schematool.log
 
-# Artefacts de validation (source versionnée dans VALIDATION/ ; copies de travail sur le master)
+# Artefacts archivés lors des nettoyages du master (scripts/reset_master.ps1)
+archives/
 scripts/master/*_year.py
 scripts/master/broken_mapper.py
 scripts/master/run_*.sh
