@@ -14,7 +14,7 @@ RUN curl -fsSL https://dlcdn.apache.org/hadoop/common/hadoop-$HADOOP_VERSION/had
 RUN curl -fsSL https://dlcdn.apache.org/hbase/$HBASE_VERSION/hbase-$HBASE_VERSION-hadoop3-bin.tar.gz \
     | tar xz -C /opt && mv /opt/hbase-$HBASE_VERSION-hadoop3 /opt/hbase
 
-RUN curl -fsSL https://dlcdn.apache.org/zookeeper/zookeeper-$ZK_VERSION/apache-zookeeper-$ZK_VERSION-bin.tar.gz \
+RUN curl -fsSL https://archive.apache.org/dist/zookeeper/zookeeper-$ZK_VERSION/apache-zookeeper-$ZK_VERSION-bin.tar.gz \
     | tar xz -C /opt && mv /opt/apache-zookeeper-$ZK_VERSION-bin /opt/zookeeper
 
 # 4.1.0 n'est plus sur dlcdn (seul miroir des 4.2.x) : archive.apache.org
@@ -93,3 +93,4 @@ WORKDIR /home
 EXPOSE 9870 8088 8042 16010 2181 9000 9090 9091 10000 10002
 
 ENTRYPOINT ["/opt/scripts/entrypoint.sh"]
+
