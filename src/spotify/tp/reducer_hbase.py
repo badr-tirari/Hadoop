@@ -38,7 +38,7 @@
 import sys
 import happybase
 
-IP = '127.0.0.1'                 # Thrift du cluster ; depuis le master
+IP = 'hadoop-master'      # Thrift sur le master ; les reducers tournent sur les slaves
 PORT = 9090
 TABLE = 'ventes'
 

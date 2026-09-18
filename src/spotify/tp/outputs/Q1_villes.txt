@@ -1,0 +1,21 @@
+=== Parts generes ===
+Found 2 items
+-rw-r--r--   1 root supergroup          0 2026-09-18 12:20 output/ventes_full/_SUCCESS
+-rw-r--r--   1 root supergroup     103271 2026-09-18 12:20 output/ventes_full/part-00000
+
+=== part-00000 : 5 premieres lignes ===
+ABBEVILLE	29
+ABILLY	6
+ABLAIN ST NAZAIRE	1
+ABLIS	1
+ABLON	89
+
+=== TOP 5 villes (par total d'articles) ===
+LE MANS	3019
+CAEN	2056
+FLERS	1480
+LAVAL	1422
+VIRE NORMANDIE	1405
+
+=== Nb villes distinctes ===
+6255

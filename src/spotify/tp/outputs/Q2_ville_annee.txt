@@ -1,0 +1,21 @@
+=== Parts generes ===
+Found 2 items
+-rw-r--r--   1 root supergroup          0 2026-09-18 12:21 output/ventes_annee/_SUCCESS
+-rw-r--r--   1 root supergroup     653779 2026-09-18 12:21 output/ventes_annee/part-00000
+
+=== part-00000 : 5 premieres lignes ===
+ABBEVILLE#2008	2
+ABBEVILLE#2010	3
+ABBEVILLE#2012	10
+ABBEVILLE#2015	7
+ABBEVILLE#2019	6
+
+=== TOP 5 couples (ville#annee) ===
+LE MANS#2010	305
+BEAUFORT EN VALLEE#2012	305
+LE MANS#2006	267
+LE MANS#2011	262
+LE MANS#2015	258
+
+=== Nb couples distincts ===
+31241

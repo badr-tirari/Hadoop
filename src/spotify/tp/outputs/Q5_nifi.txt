@@ -1,0 +1,21 @@
+=== TP Q5 - NiFi : ingestion GetFile -> ConvertRecord -> PutFile -> HDFS -> Hive ===
+
+--- Flux NiFi (Data Provenance, FlowFile b115ed2c) ---
+12:33:24.557  RECEIVE           GetFile        193.11 KB   (CSV lu depuis nifi/input)
+12:33:24.892  CONTENT_MODIFIED  ConvertRecord  147.09 KB   (CSV -> TSV, virgules -> tabulations)
+12:33:24.968  SEND              PutFile        147.09 KB   (ecrit dans nifi/output = /home/staging)
+12:33:24.969  DROP              PutFile                    (fin de vie du FlowFile)
+
+--- Pont vers HDFS (image NiFi 2.x sans bundle Hadoop -> pas de PutHDFS) ---
+hdfs dfs -moveFromLocal -f /home/staging/dataw_fro03_mini_1000.csv /user/root/ventes_nifi/
+
+--- Recomptage Hive (table externe ventes_nifi) ---
+COUNT(*) AVANT ingestion : 0
+COUNT(*) APRES ingestion : 1000   (999 lignes ventes + 1 en-tete conserve par NiFi)
+
+--- Apercu (villecli, qte) : alignement correct ---
+villecli    qte        <- en-tete ingere tel quel (piege nom/contenu)
+BOURGUEBUS  2
+BOURGUEBUS  2
+BOURGUEBUS  1
+SAINT MALO  1

@@ -24,7 +24,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-conn = happybase.Connection('127.0.0.1', 9090)
+conn = happybase.Connection('hadoop-master', 9090)
 table = conn.table('ventes')
 
 totaux = {}

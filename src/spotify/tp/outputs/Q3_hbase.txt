@@ -1,0 +1,5 @@
+=== Mode de chargement : reducer happybase distribue (conforme au sujet) ===
+count 'ventes'         = 6255 villes
+get 'ventes','LE MANS' = b'3019'
+get 'ventes','CAEN'    = b'2056'
+get 'ventes','FLERS'   = b'1480'

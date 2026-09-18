@@ -1,0 +1,74 @@
+2026-09-18T12:23:09.712787162Z main WARN The use of package scanning to locate Log4j plugins is deprecated.
+Please remove the `packages` attribute from your configuration file.
+See https://logging.apache.org/log4j/2.x/faq.html#package-scanning for details.
+2026-09-18T12:23:09.821201961Z main INFO Starting configuration org.apache.logging.log4j.core.config.properties.PropertiesConfiguration@38604b81...
+2026-09-18T12:23:09.821720926Z main INFO Start watching for changes to jar:file:/opt/hive/lib/hive-beeline-4.1.0.jar!/beeline-log4j2.properties every 0 seconds
+2026-09-18T12:23:09.822098581Z main INFO Configuration org.apache.logging.log4j.core.config.properties.PropertiesConfiguration@38604b81 started.
+2026-09-18T12:23:09.824285534Z main INFO Stopping configuration org.apache.logging.log4j.core.config.DefaultConfiguration@2a54a73f...
+2026-09-18T12:23:09.859973188Z main INFO Configuration org.apache.logging.log4j.core.config.DefaultConfiguration@2a54a73f stopped.
+2026-09-18T12:23:16.471593399Z main WARN The use of package scanning to locate Log4j plugins is deprecated.
+Please remove the `packages` attribute from your configuration file.
+See https://logging.apache.org/log4j/2.x/faq.html#package-scanning for details.
+2026-09-18T12:23:16.576737611Z main INFO Starting configuration org.apache.logging.log4j.core.config.properties.PropertiesConfiguration@38604b81...
+2026-09-18T12:23:16.577236418Z main INFO Start watching for changes to jar:file:/opt/hive/lib/hive-beeline-4.1.0.jar!/beeline-log4j2.properties every 0 seconds
+2026-09-18T12:23:16.577616499Z main INFO Configuration org.apache.logging.log4j.core.config.properties.PropertiesConfiguration@38604b81 started.
+2026-09-18T12:23:16.579727411Z main INFO Stopping configuration org.apache.logging.log4j.core.config.DefaultConfiguration@2a54a73f...
+2026-09-18T12:23:16.580188681Z main INFO Configuration org.apache.logging.log4j.core.config.DefaultConfiguration@2a54a73f stopped.
++-------------------+
+|       info        |
++-------------------+
+| --- COUNT(*) ---  |
++-------------------+
++---------+
+|   _c0   |
++---------+
+| 135274  |
++---------+
++----------------------------------+
+|               info               |
++----------------------------------+
+| --- SUM(qte) total articles ---  |
++----------------------------------+
++---------+
+|   _c0   |
++---------+
+| 195070  |
++---------+
++----------------------------+
+|            info            |
++----------------------------+
+| --- villes distinctes ---  |
++----------------------------+
++-------+
+|  _c0  |
++-------+
+| 6255  |
++-------+
++---------------------------------------------+
+|                    info                     |
++---------------------------------------------+
+| --- TOP 5 villes (doit = MapReduce Q1) ---  |
++---------------------------------------------+
++-----------------+--------+
+|    villecli     | total  |
++-----------------+--------+
+| LE MANS         | 3019   |
+| CAEN            | 2056   |
+| FLERS           | 1480   |
+| LAVAL           | 1422   |
+| VIRE NORMANDIE  | 1405   |
++-----------------+--------+
++----------------------------------------------------+
+|                        info                        |
++----------------------------------------------------+
+| --- TOP 5 (ville, annee) (doit = MapReduce Q2) --- |
++----------------------------------------------------+
++---------------------+--------+--------+
+|      villecli       | annee  | total  |
++---------------------+--------+--------+
+| LE MANS             | 2010   | 305    |
+| BEAUFORT EN VALLEE  | 2012   | 305    |
+| LE MANS             | 2006   | 267    |
+| LE MANS             | 2011   | 262    |
+| LE MANS             | 2015   | 258    |
++---------------------+--------+--------+

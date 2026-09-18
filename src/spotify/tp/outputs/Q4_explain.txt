@@ -1,0 +1,91 @@
+2026-09-18T12:27:01.362906363Z main WARN The use of package scanning to locate Log4j plugins is deprecated.
+Please remove the `packages` attribute from your configuration file.
+See https://logging.apache.org/log4j/2.x/faq.html#package-scanning for details.
+2026-09-18T12:27:01.477566592Z main INFO Starting configuration org.apache.logging.log4j.core.config.properties.PropertiesConfiguration@38604b81...
+2026-09-18T12:27:01.478132476Z main INFO Start watching for changes to jar:file:/opt/hive/lib/hive-beeline-4.1.0.jar!/beeline-log4j2.properties every 0 seconds
+2026-09-18T12:27:01.478613074Z main INFO Configuration org.apache.logging.log4j.core.config.properties.PropertiesConfiguration@38604b81 started.
+2026-09-18T12:27:01.481460645Z main INFO Stopping configuration org.apache.logging.log4j.core.config.DefaultConfiguration@2a54a73f...
+2026-09-18T12:27:01.482056429Z main INFO Configuration org.apache.logging.log4j.core.config.DefaultConfiguration@2a54a73f stopped.
++----------------------------------------------------+
+|                      Explain                       |
++----------------------------------------------------+
+| STAGE DEPENDENCIES:                                |
+|   Stage-1 is a root stage                          |
+|   Stage-2 depends on stages: Stage-1               |
+|   Stage-0 depends on stages: Stage-2               |
+|                                                    |
+| STAGE PLANS:                                       |
+|   Stage: Stage-1                                   |
+|     Map Reduce                                     |
+|       Map Operator Tree:                           |
+|           TableScan                                |
+|             alias: ventes                          |
+|             Statistics: Num rows: 114764 Data size: 19522108 Basic stats: COMPLETE Column stats: NONE |
+|             Select Operator                        |
+|               expressions: villecli (type: string), qte (type: int) |
+|               outputColumnNames: villecli, qte     |
+|               Statistics: Num rows: 114764 Data size: 19522108 Basic stats: COMPLETE Column stats: NONE |
+|               Group By Operator                    |
+|                 aggregations: sum(qte)             |
+|                 keys: villecli (type: string)      |
+|                 minReductionHashAggr: 0.99         |
+|                 mode: hash                         |
+|                 outputColumnNames: _col0, _col1    |
+|                 Statistics: Num rows: 114764 Data size: 19522108 Basic stats: COMPLETE Column stats: NONE |
+|                 Reduce Output Operator             |
+|                   key expressions: _col0 (type: string) |
+|                   null sort order: z               |
+|                   sort order: +                    |
+|                   Map-reduce partition columns: _col0 (type: string) |
+|                   Statistics: Num rows: 114764 Data size: 19522108 Basic stats: COMPLETE Column stats: NONE |
+|                   value expressions: _col1 (type: bigint) |
+|       Execution mode: vectorized                   |
+|       Reduce Operator Tree:                        |
+|         Group By Operator                          |
+|           aggregations: sum(VALUE._col0)           |
+|           keys: KEY._col0 (type: string)           |
+|           mode: mergepartial                       |
+|           outputColumnNames: _col0, _col1          |
+|           Statistics: Num rows: 57382 Data size: 9761054 Basic stats: COMPLETE Column stats: NONE |
+|           File Output Operator                     |
+|             compressed: false                      |
+|             table:                                 |
+|                 input format: org.apache.hadoop.mapred.SequenceFileInputFormat |
+|                 output format: org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat |
+|                 serde: org.apache.hadoop.hive.serde2.lazybinary.LazyBinarySerDe |
+|                                                    |
+|   Stage: Stage-2                                   |
+|     Map Reduce                                     |
+|       Map Operator Tree:                           |
+|           TableScan                                |
+|             Reduce Output Operator                 |
+|               key expressions: _col1 (type: bigint) |
+|               null sort order: a                   |
+|               sort order: -                        |
+|               Statistics: Num rows: 57382 Data size: 9761054 Basic stats: COMPLETE Column stats: NONE |
+|               TopN Hash Memory Usage: 0.1          |
+|               value expressions: _col0 (type: string) |
+|       Execution mode: vectorized                   |
+|       Reduce Operator Tree:                        |
+|         Select Operator                            |
+|           expressions: VALUE._col0 (type: string), KEY.reducesinkkey0 (type: bigint) |
+|           outputColumnNames: _col0, _col1          |
+|           Statistics: Num rows: 57382 Data size: 9761054 Basic stats: COMPLETE Column stats: NONE |
+|           Limit                                    |
+|             Number of rows: 5                      |
+|             Statistics: Num rows: 5 Data size: 850 Basic stats: COMPLETE Column stats: NONE |
+|             File Output Operator                   |
+|               compressed: false                    |
+|               Statistics: Num rows: 5 Data size: 850 Basic stats: COMPLETE Column stats: NONE |
+|               table:                               |
+|                   input format: org.apache.hadoop.mapred.SequenceFileInputFormat |
+|                   output format: org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat |
+|                   serde: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe |
+|                                                    |
+|   Stage: Stage-0                                   |
+|     Fetch Operator                                 |
+|       limit: 5                                     |
+|       Processor Tree:                              |
+|         ListSink                                   |
+|                                                    |
++----------------------------------------------------+
